@@ -41,6 +41,8 @@ namespace HorseMobileService.Models
         }
 
         public System.Data.Entity.DbSet<HorseMobileService.DataObjects.UserItem> UserItems { get; set; }
+
+        public System.Data.Entity.DbSet<HorseMobileService.DataObjects.HorseItem> HorseItems { get; set; }
     }
 
 }

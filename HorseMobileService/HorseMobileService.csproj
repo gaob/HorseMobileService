@@ -188,8 +188,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\HorseItemController.cs" />
     <Compile Include="Controllers\meController.cs" />
     <Compile Include="Controllers\UserItemController.cs" />
+    <Compile Include="DataObjects\HorseItem.cs" />
     <Compile Include="DataObjects\UserItem.cs" />
     <Compile Include="Models\MobileServiceContext.cs" />
     <Compile Include="Global.asax.cs">
