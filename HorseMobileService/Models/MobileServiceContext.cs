@@ -39,6 +39,8 @@ namespace HorseMobileService.Models
                 new AttributeToColumnAnnotationConvention<TableColumnAttribute, string>(
                     "ServiceTableColumn", (property, attributes) => attributes.Single().ColumnType.ToString()));
         }
+
+        public System.Data.Entity.DbSet<HorseMobileService.DataObjects.UserItem> UserItems { get; set; }
     }
 
 }

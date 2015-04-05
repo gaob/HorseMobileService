@@ -8,12 +8,15 @@ using Microsoft.WindowsAzure.Mobile.Service;
 using Microsoft.WindowsAzure.Mobile.Service.Security;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using HorseMobileService.Models;
+using HorseMobileService.DataObjects;
 
 namespace CustomAPIAMobileService.Controllers
 {
     public class meController : ApiController
     {
         public ApiServices Services { get; set; }
+        MobileServiceContext context = new MobileServiceContext();
 
         // GET api/me
         [AuthorizeLevel(AuthorizationLevel.User)]
@@ -34,6 +37,15 @@ namespace CustomAPIAMobileService.Controllers
                     dynamic me = client.Get("me");
 
                     dynamic picture = client.Get("me/picture?redirect=false&height=200&width=200");
+
+                    //Check to add User
+                    var result = context.UserItems.Find(me.id);
+
+                    if (result == null)
+                    {
+                        context.UserItems.Add(new UserItem { Id = me.id, Name = me.name, Pic_url = picture.data.url });
+                    }
+                    context.SaveChanges();
 
                     return Request.CreateResponse(HttpStatusCode.OK, new { id = me.id, 
                                                                            name = me.name,
