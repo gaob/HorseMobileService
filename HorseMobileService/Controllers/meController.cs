@@ -39,17 +39,30 @@ namespace CustomAPIAMobileService.Controllers
                     dynamic picture = client.Get("me/picture?redirect=false&height=200&width=200");
 
                     //Check to add User
-                    var result = context.UserItems.Find(me.id);
+                    string me_id = me.id;
+                    var result = context.UserItems.Find(me_id);
 
                     if (result == null)
                     {
-                        context.UserItems.Add(new UserItem { Id = me.id, Name = me.name, Pic_url = picture.data.url });
+                        context.UserItems.Add(new UserItem { Id = me_id, Name = me.name, Pic_url = picture.data.url });
                     }
-                    context.SaveChanges();
 
-                    return Request.CreateResponse(HttpStatusCode.OK, new { id = me.id, 
+                    //Check User's defaul horse
+                    string horse_id = string.Empty;
+                    var query_horse = context.HorseItems.Where(horse => (horse.Owner_id == me_id));
+
+                    if (query_horse.Count() > 0)
+                    {
+                        horse_id = query_horse.First().Id;
+                    }
+
+                    //Make it an Async method to save response time.
+                    context.SaveChangesAsync();
+
+                    return Request.CreateResponse(HttpStatusCode.OK, new { id = me_id, 
                                                                            name = me.name,
-                                                                           pic_url = picture.data.url});
+                                                                           pic_url = picture.data.url,
+                                                                           horse_id = horse_id});
                 }
                 else
                 {
