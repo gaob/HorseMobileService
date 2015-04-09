@@ -47,13 +47,15 @@ namespace CustomAPIAMobileService.Controllers
                         context.UserItems.Add(new UserItem { Id = me_id, Name = me.name, Pic_url = picture.data.url });
                     }
 
-                    //Check User's defaul horse
+                    //Check User's default horse
                     string horse_id = string.Empty;
+                    string horse_name = string.Empty;
                     var query_horse = context.HorseItems.Where(horse => (horse.Owner_id == me_id));
 
                     if (query_horse.Count() > 0)
                     {
                         horse_id = query_horse.First().Id;
+                        horse_name = query_horse.First().Name;
                     }
 
                     //Make it an Async method to save response time.
@@ -62,7 +64,8 @@ namespace CustomAPIAMobileService.Controllers
                     return Request.CreateResponse(HttpStatusCode.OK, new { id = me_id, 
                                                                            name = me.name,
                                                                            pic_url = picture.data.url,
-                                                                           horse_id = horse_id});
+                                                                           horse_id = horse_id,
+                                                                           horse_name = horse_name});
                 }
                 else
                 {
