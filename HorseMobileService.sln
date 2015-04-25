@@ -5,6 +5,8 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HorseMobileService", "HorseMobileService\HorseMobileService.csproj", "{D81EBED8-97FB-4228-881B-06BD07322555}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HorseWebJob", "HorseWebJob\HorseWebJob.csproj", "{DB860ED0-6852-42AF-8022-C1097630B08B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{D81EBED8-97FB-4228-881B-06BD07322555}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D81EBED8-97FB-4228-881B-06BD07322555}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D81EBED8-97FB-4228-881B-06BD07322555}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB860ED0-6852-42AF-8022-C1097630B08B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB860ED0-6852-42AF-8022-C1097630B08B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB860ED0-6852-42AF-8022-C1097630B08B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB860ED0-6852-42AF-8022-C1097630B08B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
