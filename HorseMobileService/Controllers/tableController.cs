@@ -38,8 +38,6 @@ namespace HorseMobileService.Controllers
                 // Create the table if it does not exist
                 bool isNew = table.CreateIfNotExists();
 
-                var entities = table.ExecuteQuery(new TableQuery()).ToList();
-
                 foreach (NewsItem item in table.ExecuteQuery(new TableQuery<NewsItem>()))
                 {
                     JNews.Add(JObject.FromObject(new
@@ -132,6 +130,49 @@ namespace HorseMobileService.Controllers
 
         // GET api/table/comment
         [AuthorizeLevel(AuthorizationLevel.User)]
+        [Route("api/table/comment/{news_id}")]
+        public HttpResponseMessage GetComments(string news_id)
+        {
+            try
+            {
+                JArray JComments = new JArray();
+
+                // Retrieve the storage account from the connection string.
+                CloudStorageAccount storageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=dotnet3;AccountKey=zyr2j7kSfhuf3BxySWXTMrpzlNUO4YFl6+kOIaD4uHJKK1jWV9aQr4gzx7eVJ33auScvc49vRhtQcgIMjlq0rA==");
+
+                // Create the table client.
+                CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
+
+                // Create the CloudTable object that represents the "logentry" table.
+                CloudTable table = tableClient.GetTableReference("commentstable");
+
+                // Create the table if it does not exist
+                bool isNew = table.CreateIfNotExists();
+
+                foreach (CommentItem item in table.ExecuteQuery(new TableQuery<CommentItem>()).Where(x => x.News_id == news_id))
+                {
+                    JComments.Add(JObject.FromObject(new
+                    {
+                        id = item.RowKey,
+                        author_id = item.Author_id,
+                        author_name = item.Author_name,
+                        text = item.Text,
+                        publishtime = item.PublishTime.ToString(),
+                        news_id = item.News_id,
+                        liked = item.Liked ? "true" : "false"
+                    }));
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK, JComments);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, new { message = ex.Message });
+            }
+        }
+
+        // POST api/table/comment
+        [AuthorizeLevel(AuthorizationLevel.User)]
         [Route("api/table/comment")]
         public HttpResponseMessage PostComment([FromBody]dynamic payload)
         {
@@ -186,7 +227,6 @@ namespace HorseMobileService.Controllers
                 {
                     return Request.CreateResponse((HttpStatusCode)tableResult.HttpStatusCode, new { rowkey = anItem.RowKey });
                 }
-
             }
             catch (Exception ex)
             {
