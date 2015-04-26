@@ -26,7 +26,19 @@ namespace HorseWebJob
             {
                 using (Stream output = outputBlob.OpenWrite())
                 {
-                    ConvertImageToThumbnailJPG(input, output);
+                    if (message.StartsWith("horse"))
+                    {
+                        ConvertImageToThumbnailJPG(input, output, 80);
+                    }
+                    else if (message.StartsWith("news"))
+                    {
+                        ConvertImageToThumbnailJPG(input, output, 800);
+                    }
+                    else
+                    {
+                        ConvertImageToThumbnailJPG(input, output, 800);
+                    }
+                    
                     outputBlob.Properties.ContentType = "image/jpeg";
                 }
             }
@@ -36,9 +48,8 @@ namespace HorseWebJob
             }
         }
 
-        public static void ConvertImageToThumbnailJPG(Stream input, Stream output)
+        public static void ConvertImageToThumbnailJPG(Stream input, Stream output, int thumbnailsize)
         {
-            int thumbnailsize = 80;
             int width;
             int height;
             var originalImage = new Bitmap(input);

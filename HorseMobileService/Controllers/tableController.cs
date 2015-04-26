@@ -66,7 +66,15 @@ namespace HorseMobileService.Controllers
                 // Execute the insert operation.
                 TableResult tableResult = table.Execute(insertOperation);
 
-                return Request.CreateResponse((HttpStatusCode)tableResult.HttpStatusCode, new { rowkey = anItem.RowKey });
+                if (tableResult.HttpStatusCode == 204)
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, new { rowkey = anItem.RowKey });
+                }
+                else
+                {
+                    return Request.CreateResponse((HttpStatusCode)tableResult.HttpStatusCode, new { rowkey = anItem.RowKey });
+                }
+                
             }
             catch (Exception ex)
             {
