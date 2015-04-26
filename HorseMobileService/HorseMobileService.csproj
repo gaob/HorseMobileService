@@ -123,8 +123,9 @@
     <Reference Include="Microsoft.WindowsAzure.Mobile.Service.Tables">
       <HintPath>..\packages\WindowsAzure.MobileServices.Backend.Tables.1.0.405\lib\net45\Microsoft.WindowsAzure.Mobile.Service.Tables.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.WindowsAzure.Storage">
-      <HintPath>..\packages\WindowsAzure.Storage.4.3.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
+    <Reference Include="Microsoft.WindowsAzure.Storage, Version=3.1.0.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WindowsAzure.Storage.3.1.0.1\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -198,8 +199,10 @@
     <Compile Include="Controllers\HorseItemController.cs" />
     <Compile Include="Controllers\meController.cs" />
     <Compile Include="Controllers\queueController.cs" />
+    <Compile Include="Controllers\tableController.cs" />
     <Compile Include="Controllers\UserItemController.cs" />
     <Compile Include="DataObjects\HorseItem.cs" />
+    <Compile Include="DataObjects\NewsItem.cs" />
     <Compile Include="DataObjects\UserItem.cs" />
     <Compile Include="Models\MobileServiceContext.cs" />
     <Compile Include="Global.asax.cs">
