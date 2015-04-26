@@ -19,7 +19,7 @@ namespace HorseWebJob
         // on an Azure Queue called queue.
         public static void ProcessQueueMessage([QueueTrigger("imagesqueue")] string message, 
             [Blob("dotnet3/{queueTrigger}.jpg", FileAccess.Read)] Stream input,
-            [Blob("dotnet3/{queueTrigger}_thumbnail.jpg")] CloudBlockBlob outputBlob,
+            [Blob("dotnet3/{queueTrigger}-thumbnail.jpg")] CloudBlockBlob outputBlob,
             TextWriter log)
         {
             try

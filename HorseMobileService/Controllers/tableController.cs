@@ -9,12 +9,55 @@ using Microsoft.WindowsAzure.Mobile.Service.Security;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using HorseMobileService.DataObjects;
+using Newtonsoft.Json.Linq;
 
 namespace HorseMobileService.Controllers
 {
     public class tableController : ApiController
     {
         public ApiServices Services { get; set; }
+
+        // GET api/queue
+        [AuthorizeLevel(AuthorizationLevel.User)]
+        public HttpResponseMessage GetAllNews()
+        {
+            try
+            {
+                JArray JNews = new JArray();
+
+                // Retrieve the storage account from the connection string.
+                CloudStorageAccount storageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=dotnet3;AccountKey=zyr2j7kSfhuf3BxySWXTMrpzlNUO4YFl6+kOIaD4uHJKK1jWV9aQr4gzx7eVJ33auScvc49vRhtQcgIMjlq0rA==");
+
+                // Create the table client.
+                CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
+
+                // Create the CloudTable object that represents the "logentry" table.
+                CloudTable table = tableClient.GetTableReference("newstable");
+
+                var entities = table.ExecuteQuery(new TableQuery()).ToList();
+
+                foreach (NewsItem item in table.ExecuteQuery(new TableQuery<NewsItem>()))
+                {
+                    JNews.Add(JObject.FromObject(new
+                    {
+                        id = item.RowKey,
+                        author_id = item.Author_id,
+                        author_name = item.Author_name,
+                        author_pic_url = item.Author_pic_url,
+                        text = item.Text,
+                        pic_url = item.Pic_url,
+                        publishtime = item.PublishTime.ToString(),
+                        horse_id = item.Horse_id
+                    }));
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK, JNews);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, new { message = ex.Message });
+            }
+        }
 
         // GET api/queue
         [AuthorizeLevel(AuthorizationLevel.User)]
@@ -54,7 +97,7 @@ namespace HorseMobileService.Controllers
                 anItem.Author_name = payload.author_name;
                 anItem.Author_pic_url = payload.author_pic_url;
                 anItem.Text = payload.text;
-                anItem.Pic_url = payload.pic_url;
+                anItem.Pic_url = "https://dotnet3.blob.core.windows.net/dotnet3/news-" + anItem.RowKey + "-thumbnail.jpg";
                 anItem.PublishTime = DateTime.Parse((string)payload.publishtime);
                 anItem.Horse_id = payload.horse_id;
 
