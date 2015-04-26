@@ -35,6 +35,9 @@ namespace HorseMobileService.Controllers
                 // Create the CloudTable object that represents the "logentry" table.
                 CloudTable table = tableClient.GetTableReference("newstable");
 
+                // Create the table if it does not exist
+                bool isNew = table.CreateIfNotExists();
+
                 var entities = table.ExecuteQuery(new TableQuery()).ToList();
 
                 foreach (NewsItem item in table.ExecuteQuery(new TableQuery<NewsItem>()))
@@ -60,10 +63,10 @@ namespace HorseMobileService.Controllers
             }
         }
 
-        // GET api/queue
+        // GET api/table/news
         [AuthorizeLevel(AuthorizationLevel.User)]
         [Route("api/table/news")]
-        public HttpResponseMessage Post([FromBody]dynamic payload)
+        public HttpResponseMessage PostNews([FromBody]dynamic payload)
         {
             try
             {
@@ -120,6 +123,70 @@ namespace HorseMobileService.Controllers
                     return Request.CreateResponse((HttpStatusCode)tableResult.HttpStatusCode, new { rowkey = anItem.RowKey });
                 }
                 
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, new { message = ex.Message });
+            }
+        }
+
+        // GET api/table/comment
+        [AuthorizeLevel(AuthorizationLevel.User)]
+        [Route("api/table/comment")]
+        public HttpResponseMessage PostComment([FromBody]dynamic payload)
+        {
+            try
+            {
+                if (payload.author_id == null ||
+                    payload.author_name == null ||
+                    payload.text == null ||
+                    payload.publishtime == null ||
+                    payload.news_id == null ||
+                    payload.liked == null)
+                {
+                    throw new Exception("key not found!");
+                }
+
+                // Retrieve the storage account from the connection string.
+                CloudStorageAccount storageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=dotnet3;AccountKey=zyr2j7kSfhuf3BxySWXTMrpzlNUO4YFl6+kOIaD4uHJKK1jWV9aQr4gzx7eVJ33auScvc49vRhtQcgIMjlq0rA==");
+
+                // Create the table client.
+                CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
+
+                // Create the CloudTable object that represents the "logentry" table.
+                CloudTable table = tableClient.GetTableReference("commentstable");
+
+                // Create the table if it does not exist
+                bool isNew = table.CreateIfNotExists();
+
+                CommentItem anItem = new CommentItem();
+
+                // Assign a unique row key
+                anItem.RowKey = Guid.NewGuid().ToString();
+                anItem.PartitionKey = (string)payload.news_id;
+
+                anItem.Author_id = payload.author_id;
+                anItem.Author_name = payload.author_name;
+                anItem.Text = payload.text;
+                anItem.PublishTime = DateTime.Parse((string)payload.publishtime);
+                anItem.News_id = payload.news_id;
+                anItem.Liked = bool.Parse((string)payload.liked);
+
+                // Create the TableOperation that inserts the external log entry entity.
+                TableOperation insertOperation = TableOperation.Insert(anItem);
+
+                // Execute the insert operation.
+                TableResult tableResult = table.Execute(insertOperation);
+
+                if (tableResult.HttpStatusCode == 204)
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, new { rowkey = anItem.RowKey });
+                }
+                else
+                {
+                    return Request.CreateResponse((HttpStatusCode)tableResult.HttpStatusCode, new { rowkey = anItem.RowKey });
+                }
+
             }
             catch (Exception ex)
             {
