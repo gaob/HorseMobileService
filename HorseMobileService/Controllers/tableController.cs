@@ -17,8 +17,9 @@ namespace HorseMobileService.Controllers
     {
         public ApiServices Services { get; set; }
 
-        // GET api/queue
+        // GET api/table/news
         [AuthorizeLevel(AuthorizationLevel.User)]
+        [Route("api/table/news")]
         public HttpResponseMessage GetAllNews()
         {
             try
@@ -61,6 +62,7 @@ namespace HorseMobileService.Controllers
 
         // GET api/queue
         [AuthorizeLevel(AuthorizationLevel.User)]
+        [Route("api/table/news")]
         public HttpResponseMessage Post([FromBody]dynamic payload)
         {
             try
