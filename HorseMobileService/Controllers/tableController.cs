@@ -38,7 +38,7 @@ namespace HorseMobileService.Controllers
                 // Create the table if it does not exist
                 bool isNew = table.CreateIfNotExists();
 
-                foreach (NewsItem item in table.ExecuteQuery(new TableQuery<NewsItem>()))
+                foreach (NewsItem item in table.ExecuteQuery(new TableQuery<NewsItem>()).OrderByDescending(x=>x.PublishTime))
                 {
                     JNews.Add(JObject.FromObject(new
                     {
@@ -149,7 +149,7 @@ namespace HorseMobileService.Controllers
                 // Create the table if it does not exist
                 bool isNew = table.CreateIfNotExists();
 
-                foreach (CommentItem item in table.ExecuteQuery(new TableQuery<CommentItem>()).Where(x => x.News_id == news_id))
+                foreach (CommentItem item in table.ExecuteQuery(new TableQuery<CommentItem>()).Where(x => x.News_id == news_id).OrderBy(x => x.PublishTime))
                 {
                     JComments.Add(JObject.FromObject(new
                     {
