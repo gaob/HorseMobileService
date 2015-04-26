@@ -11,10 +11,11 @@ namespace HorseMobileService.Controllers
 {
     public class HorseItemController : TableController<HorseItem>
     {
+        MobileServiceContext context = new MobileServiceContext();
+
         protected override void Initialize(HttpControllerContext controllerContext)
         {
             base.Initialize(controllerContext);
-            MobileServiceContext context = new MobileServiceContext();
             DomainManager = new EntityDomainManager<HorseItem>(context, Request, Services);
         }
 
@@ -40,6 +41,13 @@ namespace HorseMobileService.Controllers
         public async Task<IHttpActionResult> PostHorseItem(HorseItem item)
         {
             HorseItem current = await InsertAsync(item);
+
+            var theHorse = context.HorseItems.Find(current.Id);
+
+            theHorse.Pic_url = "https://dotnet3.blob.core.windows.net/dotnet3/horse-" + current.Id + "-thumbnail.jpg";
+
+            await context.SaveChangesAsync();
+
             return CreatedAtRoute("Tables", new { id = current.Id }, current);
         }
 
@@ -48,6 +56,5 @@ namespace HorseMobileService.Controllers
         {
              return DeleteAsync(id);
         }
-
     }
 }

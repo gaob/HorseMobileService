@@ -59,7 +59,7 @@ namespace CustomAPIAMobileService.Controllers
                     }
 
                     //Make it an Async method to save response time.
-                    context.SaveChangesAsync();
+                    await context.SaveChangesAsync();
 
                     return Request.CreateResponse(HttpStatusCode.OK, new { id = me_id, 
                                                                            name = me.name,
