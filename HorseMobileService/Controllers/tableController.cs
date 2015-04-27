@@ -241,7 +241,14 @@ namespace HorseMobileService.Controllers
 
                 if (theNews != null)
                 {
-                    theNews.Comment_Count += 1;
+                    if (anItem.Liked)
+                    {
+                        theNews.Like_Count += 1;
+                    }
+                    else
+                    {
+                        theNews.Comment_Count += 1;
+                    }
 
                     anOperation = TableOperation.Replace(theNews);
 
