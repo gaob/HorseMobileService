@@ -15,6 +15,7 @@ namespace HorseMobileService.Controllers
 {
     public class tableController : ApiController
     {
+        private const string NEWS_PARTITIONKEY = "NEWS";
         public ApiServices Services { get; set; }
 
         // GET api/table/news
@@ -109,7 +110,7 @@ namespace HorseMobileService.Controllers
                 anItem.Horse_id = payload.horse_id;
                 anItem.Horse_name = payload.horse_name;
 
-                anItem.PartitionKey = anItem.PublishTime.ToString("MMddyyyy");
+                anItem.PartitionKey = NEWS_PARTITIONKEY;
 
                 // Internal field
                 anItem.Like_Count = 0;
@@ -224,10 +225,28 @@ namespace HorseMobileService.Controllers
                 anItem.Liked = bool.Parse((string)payload.liked);
 
                 // Create the TableOperation that inserts the external log entry entity.
-                TableOperation insertOperation = TableOperation.Insert(anItem);
+                TableOperation anOperation = TableOperation.Insert(anItem);
 
                 // Execute the insert operation.
-                TableResult tableResult = table.Execute(insertOperation);
+                TableResult tableResult = table.Execute(anOperation);
+
+                // Create the CloudTable object that represents the "logentry" table.
+                table = tableClient.GetTableReference("newstable");
+
+                anOperation = TableOperation.Retrieve<NewsItem>(NEWS_PARTITIONKEY, anItem.News_id);
+
+                tableResult = table.Execute(anOperation);
+
+                NewsItem theNews = (NewsItem)tableResult.Result;
+
+                if (theNews != null)
+                {
+                    theNews.Comment_Count += 1;
+
+                    anOperation = TableOperation.Replace(theNews);
+
+                    table.Execute(anOperation);
+                }
 
                 if (tableResult.HttpStatusCode == 204)
                 {
