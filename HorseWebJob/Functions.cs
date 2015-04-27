@@ -10,6 +10,8 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using Microsoft.WindowsAzure.Storage.Table;
+using HorseMobileService.DataObjects;
 
 namespace HorseWebJob
 {
@@ -40,6 +42,37 @@ namespace HorseWebJob
                     }
                     
                     outputBlob.Properties.ContentType = "image/jpeg";
+                }
+
+                if (message.StartsWith("news"))
+                {
+                    log.WriteLine("Update News");
+
+                    // Retrieve the storage account from the connection string.
+                    CloudStorageAccount storageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=dotnet3;AccountKey=zyr2j7kSfhuf3BxySWXTMrpzlNUO4YFl6+kOIaD4uHJKK1jWV9aQr4gzx7eVJ33auScvc49vRhtQcgIMjlq0rA==");
+
+                    // Create the table client.
+                    CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
+
+                    // Create the CloudTable object that represents the "logentry" table.
+                    var table = tableClient.GetTableReference("newstable");
+
+                    var anOperation = TableOperation.Retrieve<NewsItem>("NEWS", message.Substring(5));
+
+                    var tableResult = table.Execute(anOperation);
+
+                    NewsItem theNews = (NewsItem)tableResult.Result;
+
+                    if (theNews != null)
+                    {
+                        log.WriteLine("Begin update");
+
+                        theNews.IsReady = true;
+
+                        anOperation = TableOperation.Replace(theNews);
+
+                        table.Execute(anOperation);
+                    }
                 }
             }
             catch (Exception ex)

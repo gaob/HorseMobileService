@@ -39,7 +39,7 @@ namespace HorseMobileService.Controllers
                 // Create the table if it does not exist
                 bool isNew = table.CreateIfNotExists();
 
-                foreach (NewsItem item in table.ExecuteQuery(new TableQuery<NewsItem>()).OrderByDescending(x=>x.PublishTime))
+                foreach (NewsItem item in table.ExecuteQuery(new TableQuery<NewsItem>()).Where(x => x.IsReady).OrderByDescending(x=>x.PublishTime))
                 {
                     JNews.Add(JObject.FromObject(new
                     {
