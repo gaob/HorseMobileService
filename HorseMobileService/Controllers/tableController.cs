@@ -49,7 +49,10 @@ namespace HorseMobileService.Controllers
                         text = item.Text,
                         pic_url = item.Pic_url,
                         publishtime = item.PublishTime.ToString(),
-                        horse_id = item.Horse_id
+                        horse_id = item.Horse_id,
+                        horse_name = item.Horse_name,
+                        like_count = item.Like_Count,
+                        comment_count = item.Comment_Count
                     }));
                 }
 
@@ -74,7 +77,8 @@ namespace HorseMobileService.Controllers
                     payload.text == null ||
                     payload.pic_url == null ||
                     payload.publishtime == null ||
-                    payload.horse_id == null)
+                    payload.horse_id == null ||
+                    payload.horse_name == null)
                 {
                     throw new Exception("key not found!");
                 }
@@ -103,8 +107,14 @@ namespace HorseMobileService.Controllers
                 anItem.Pic_url = "https://dotnet3.blob.core.windows.net/dotnet3/news-" + anItem.RowKey + "-thumbnail.jpg";
                 anItem.PublishTime = DateTime.Parse((string)payload.publishtime);
                 anItem.Horse_id = payload.horse_id;
+                anItem.Horse_name = payload.horse_name;
 
                 anItem.PartitionKey = anItem.PublishTime.ToString("MMddyyyy");
+
+                // Internal field
+                anItem.Like_Count = 0;
+                anItem.Comment_Count = 0;
+                anItem.IsReady = false;
 
                 // Create the TableOperation that inserts the external log entry entity.
                 TableOperation insertOperation = TableOperation.Insert(anItem);

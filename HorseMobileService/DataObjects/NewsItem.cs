@@ -15,5 +15,9 @@ namespace HorseMobileService.DataObjects
         public string Pic_url { get; set; }
         public DateTime PublishTime { get; set; }
         public string Horse_id { get; set; }
+        public string Horse_name { get; set; }
+        public int Comment_Count { get; set; }
+        public int Like_Count { get; set; }
+        public bool IsReady { get; set; }
     }
 }
