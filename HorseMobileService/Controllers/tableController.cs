@@ -10,6 +10,7 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using HorseMobileService.DataObjects;
 using Newtonsoft.Json.Linq;
+using Microsoft.ServiceBus.Notifications;
 
 namespace HorseMobileService.Controllers
 {
@@ -199,6 +200,8 @@ namespace HorseMobileService.Controllers
                     throw new Exception("key not found!");
                 }
 
+                string notification_message = string.Empty;
+
                 // Retrieve the storage account from the connection string.
                 CloudStorageAccount storageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=dotnet3;AccountKey=zyr2j7kSfhuf3BxySWXTMrpzlNUO4YFl6+kOIaD4uHJKK1jWV9aQr4gzx7eVJ33auScvc49vRhtQcgIMjlq0rA==");
 
@@ -244,16 +247,26 @@ namespace HorseMobileService.Controllers
                     if (anItem.Liked)
                     {
                         theNews.Like_Count += 1;
+
+                        notification_message = anItem.Author_name + " liked your post.";
                     }
                     else
                     {
                         theNews.Comment_Count += 1;
+
+                        notification_message = anItem.Author_name + " commented on your post.";
                     }
 
                     anOperation = TableOperation.Replace(theNews);
 
                     table.Execute(anOperation);
                 }
+
+                string to_id = theNews.Author_id;
+
+                NotificationHubClient hub = NotificationHubClient.CreateClientFromConnectionString("Endpoint=sb://dotnet3hub-ns.servicebus.windows.net/;SharedAccessKeyName=DefaultFullSharedAccessSignature;SharedAccessKey=vVp4C3reoryHpsR1TlN5l6qbnVX+cg7L7vsmIF4CpN0=", "dotnet3hub");
+
+                hub.SendGcmNativeNotificationAsync(@"{ ""data"" : {""msg"":"""+ notification_message + @"""}}", new string[] { to_id });
 
                 if (tableResult.HttpStatusCode == 204)
                 {

@@ -200,6 +200,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\HorseItemController.cs" />
     <Compile Include="Controllers\meController.cs" />
+    <Compile Include="Controllers\notificationController.cs" />
     <Compile Include="Controllers\queueController.cs" />
     <Compile Include="Controllers\tableController.cs" />
     <Compile Include="Controllers\UserItemController.cs" />
