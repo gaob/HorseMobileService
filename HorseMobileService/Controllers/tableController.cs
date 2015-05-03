@@ -171,6 +171,21 @@ namespace HorseMobileService.Controllers
 
                 table.Execute(deleteOperation);
 
+                table = tableClient.GetTableReference("commentstable");
+
+                var batchOperation = new TableBatchOperation();
+
+                var projectionQuery = new TableQuery<CommentItem>()
+                                        .Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, id))
+                                        .Select(new string[] { "RowKey" });
+
+                foreach (var e in table.ExecuteQuery(projectionQuery))
+                {
+                    batchOperation.Delete(e);
+                }
+
+                table.ExecuteBatch(batchOperation);
+
                 return Request.CreateResponse(HttpStatusCode.OK, new { id = id});
             }
             catch (Exception ex)
