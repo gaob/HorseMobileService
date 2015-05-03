@@ -10,5 +10,6 @@ namespace HorseMobileService.DataObjects
     {
         public string Name { get; set; }
         public string Pic_url { get; set; }
+        public bool isAdmin { get; set; }
     }
 }

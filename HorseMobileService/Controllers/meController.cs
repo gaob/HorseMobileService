@@ -41,10 +41,15 @@ namespace CustomAPIAMobileService.Controllers
                     //Check to add User
                     string me_id = me.id;
                     var result = context.UserItems.Find(me_id);
+                    bool isAdmin = false;
 
                     if (result == null)
                     {
-                        context.UserItems.Add(new UserItem { Id = me_id, Name = me.name, Pic_url = picture.data.url });
+                        context.UserItems.Add(new UserItem { Id = me_id, Name = me.name, Pic_url = picture.data.url, isAdmin = false});
+                    }
+                    else
+                    {
+                        isAdmin = result.isAdmin;
                     }
 
                     //Check User's default horse
@@ -65,7 +70,8 @@ namespace CustomAPIAMobileService.Controllers
                                                                            name = me.name,
                                                                            pic_url = picture.data.url,
                                                                            horse_id = horse_id,
-                                                                           horse_name = horse_name});
+                                                                           horse_name = horse_name,
+                                                                           isAdmin = isAdmin});
                 }
                 else
                 {

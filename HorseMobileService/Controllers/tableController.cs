@@ -140,6 +140,45 @@ namespace HorseMobileService.Controllers
             }
         }
 
+        // GET api/table/news
+        [AuthorizeLevel(AuthorizationLevel.User)]
+        [Route("api/table/news/{id}")]
+        public HttpResponseMessage DeleteNews(string id)
+        {
+            try
+            {
+                // Retrieve the storage account from the connection string.
+                CloudStorageAccount storageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=dotnet3;AccountKey=zyr2j7kSfhuf3BxySWXTMrpzlNUO4YFl6+kOIaD4uHJKK1jWV9aQr4gzx7eVJ33auScvc49vRhtQcgIMjlq0rA==");
+
+                // Create the table client.
+                CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
+
+                // Create the CloudTable object that represents the "logentry" table.
+                CloudTable table = tableClient.GetTableReference("newstable");
+
+                var anOperation = TableOperation.Retrieve<NewsItem>(NEWS_PARTITIONKEY, id);
+
+                var tableResult = table.Execute(anOperation);
+
+                NewsItem theNews = (NewsItem)tableResult.Result;
+
+                if (theNews == null)
+                {
+                    throw new Exception("Couldn't find theNews.");
+                }
+
+                var deleteOperation = TableOperation.Delete(theNews);
+
+                table.Execute(deleteOperation);
+
+                return Request.CreateResponse(HttpStatusCode.OK, new { id = id});
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, new { message = ex.Message });
+            }
+        }
+
         // GET api/table/comment
         [AuthorizeLevel(AuthorizationLevel.User)]
         [Route("api/table/comment/{news_id}")]
