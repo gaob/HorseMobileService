@@ -161,6 +161,7 @@ namespace HorseMobileService.Controllers
                 var tableResult = table.Execute(anOperation);
 
                 NewsItem theNews = (NewsItem)tableResult.Result;
+                string author_id = theNews.Author_id;
 
                 if (theNews == null)
                 {
@@ -184,7 +185,14 @@ namespace HorseMobileService.Controllers
                     batchOperation.Delete(e);
                 }
 
-                table.ExecuteBatch(batchOperation);
+                if (batchOperation.Count > 0)
+                {
+                    table.ExecuteBatch(batchOperation);
+                }
+
+                NotificationHubClient hub = NotificationHubClient.CreateClientFromConnectionString("Endpoint=sb://dotnet3hub-ns.servicebus.windows.net/;SharedAccessKeyName=DefaultFullSharedAccessSignature;SharedAccessKey=vVp4C3reoryHpsR1TlN5l6qbnVX+cg7L7vsmIF4CpN0=", "dotnet3hub");
+
+                hub.SendGcmNativeNotificationAsync(@"{ ""data"" : {""msg"":""" + "Your post has been deleted" + @"""}}", new string[] { author_id });
 
                 return Request.CreateResponse(HttpStatusCode.OK, new { id = id});
             }
@@ -320,7 +328,10 @@ namespace HorseMobileService.Controllers
 
                 NotificationHubClient hub = NotificationHubClient.CreateClientFromConnectionString("Endpoint=sb://dotnet3hub-ns.servicebus.windows.net/;SharedAccessKeyName=DefaultFullSharedAccessSignature;SharedAccessKey=vVp4C3reoryHpsR1TlN5l6qbnVX+cg7L7vsmIF4CpN0=", "dotnet3hub");
 
-                hub.SendGcmNativeNotificationAsync(@"{ ""data"" : {""msg"":"""+ notification_message + @"""}}", new string[] { to_id });
+                if (anItem.Author_id != theNews.Author_id)
+                {
+                    hub.SendGcmNativeNotificationAsync(@"{ ""data"" : {""msg"":""" + notification_message + @"""}}", new string[] { to_id });
+                }
 
                 if (tableResult.HttpStatusCode == 204)
                 {
