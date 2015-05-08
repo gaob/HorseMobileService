@@ -326,6 +326,22 @@ namespace HorseMobileService.Controllers
 
                 string to_id = theNews.Author_id;
 
+                table = tableClient.GetTableReference("notificationstable");
+
+                NotificationItem aNotification = new NotificationItem();
+
+                // Assign a unique row key
+                aNotification.RowKey = Guid.NewGuid().ToString();
+                aNotification.PartitionKey = "NOTIFICATION";
+
+                aNotification.User_id = to_id;
+                aNotification.Text = notification_message;
+                aNotification.Time = DateTime.Now;
+
+                anOperation = TableOperation.Insert(aNotification);
+
+                table.Execute(anOperation);
+
                 NotificationHubClient hub = NotificationHubClient.CreateClientFromConnectionString("Endpoint=sb://dotnet3hub-ns.servicebus.windows.net/;SharedAccessKeyName=DefaultFullSharedAccessSignature;SharedAccessKey=vVp4C3reoryHpsR1TlN5l6qbnVX+cg7L7vsmIF4CpN0=", "dotnet3hub");
 
                 if (anItem.Author_id != theNews.Author_id)
@@ -341,6 +357,46 @@ namespace HorseMobileService.Controllers
                 {
                     return Request.CreateResponse((HttpStatusCode)tableResult.HttpStatusCode, new { rowkey = anItem.RowKey });
                 }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, new { message = ex.Message });
+            }
+        }
+
+        // GET api/table/notifications
+        [AuthorizeLevel(AuthorizationLevel.User)]
+        [Route("api/table/notifications/{id}")]
+        public HttpResponseMessage GetAllNews(string id)
+        {
+            try
+            {
+                JArray JNofitications = new JArray();
+
+                // Retrieve the storage account from the connection string.
+                CloudStorageAccount storageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=dotnet3;AccountKey=zyr2j7kSfhuf3BxySWXTMrpzlNUO4YFl6+kOIaD4uHJKK1jWV9aQr4gzx7eVJ33auScvc49vRhtQcgIMjlq0rA==");
+
+                // Create the table client.
+                CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
+
+                // Create the CloudTable object that represents the "logentry" table.
+                CloudTable table = tableClient.GetTableReference("notificationstable");
+
+                // Create the table if it does not exist
+                bool isNew = table.CreateIfNotExists();
+
+                foreach (NotificationItem item in table.ExecuteQuery(new TableQuery<NotificationItem>()).Where(x => x.User_id == id).OrderByDescending(x => x.Time))
+                {
+                    JNofitications.Add(JObject.FromObject(new
+                    {
+                        id = item.RowKey,
+                        user_id = item.User_id,
+                        text = item.Text,
+                        time = item.Time
+                    }));
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK, JNofitications);
             }
             catch (Exception ex)
             {

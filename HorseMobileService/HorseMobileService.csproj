@@ -206,6 +206,7 @@
     <Compile Include="Controllers\UserItemController.cs" />
     <Compile Include="DataObjects\CommentItem.cs" />
     <Compile Include="DataObjects\HorseItem.cs" />
+    <Compile Include="DataObjects\NotificationItem.cs" />
     <Compile Include="DataObjects\UserItem.cs" />
     <Compile Include="Models\MobileServiceContext.cs" />
     <Compile Include="Global.asax.cs">
