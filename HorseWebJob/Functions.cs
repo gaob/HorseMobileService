@@ -30,7 +30,7 @@ namespace HorseWebJob
                 {
                     if (message.StartsWith("horse"))
                     {
-                        ConvertImageToThumbnailJPG(input, output, 80);
+                        ConvertImageToThumbnailJPG(input, output, 400);
                     }
                     else if (message.StartsWith("news"))
                     {

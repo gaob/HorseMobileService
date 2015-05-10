@@ -190,6 +190,22 @@ namespace HorseMobileService.Controllers
                     table.ExecuteBatch(batchOperation);
                 }
 
+                table = tableClient.GetTableReference("notificationstable");
+
+                NotificationItem aNotification = new NotificationItem();
+
+                // Assign a unique row key
+                aNotification.RowKey = Guid.NewGuid().ToString();
+                aNotification.PartitionKey = "NOTIFICATION";
+
+                aNotification.User_id = author_id;
+                aNotification.Text = "Your post has been deleted";
+                aNotification.Time = DateTime.Now;
+
+                anOperation = TableOperation.Insert(aNotification);
+
+                table.Execute(anOperation);
+
                 NotificationHubClient hub = NotificationHubClient.CreateClientFromConnectionString("Endpoint=sb://dotnet3hub-ns.servicebus.windows.net/;SharedAccessKeyName=DefaultFullSharedAccessSignature;SharedAccessKey=vVp4C3reoryHpsR1TlN5l6qbnVX+cg7L7vsmIF4CpN0=", "dotnet3hub");
 
                 hub.SendGcmNativeNotificationAsync(@"{ ""data"" : {""msg"":""" + "Your post has been deleted" + @"""}}", new string[] { author_id });
