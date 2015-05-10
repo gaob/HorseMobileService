@@ -199,7 +199,7 @@ namespace HorseMobileService.Controllers
                 aNotification.PartitionKey = "NOTIFICATION";
 
                 aNotification.User_id = author_id;
-                aNotification.Text = "Your post has been deleted";
+                aNotification.Text = "Your post from " + theNews.PublishTime.ToShortDateString() +" has been deleted by admin!";
                 aNotification.Time = DateTime.Now;
 
                 anOperation = TableOperation.Insert(aNotification);
@@ -208,7 +208,7 @@ namespace HorseMobileService.Controllers
 
                 NotificationHubClient hub = NotificationHubClient.CreateClientFromConnectionString("Endpoint=sb://dotnet3hub-ns.servicebus.windows.net/;SharedAccessKeyName=DefaultFullSharedAccessSignature;SharedAccessKey=vVp4C3reoryHpsR1TlN5l6qbnVX+cg7L7vsmIF4CpN0=", "dotnet3hub");
 
-                hub.SendGcmNativeNotificationAsync(@"{ ""data"" : {""msg"":""" + "Your post has been deleted" + @"""}}", new string[] { author_id });
+                hub.SendGcmNativeNotificationAsync(@"{ ""data"" : {""msg"":""" + aNotification.Text + @"""}}", new string[] { author_id });
 
                 return Request.CreateResponse(HttpStatusCode.OK, new { id = id});
             }
@@ -326,13 +326,13 @@ namespace HorseMobileService.Controllers
                     {
                         theNews.Like_Count += 1;
 
-                        notification_message = anItem.Author_name + " liked your post.";
+                        notification_message = anItem.Author_name + " liked your post from " + theNews.PublishTime.ToShortDateString() + ".";
                     }
                     else
                     {
                         theNews.Comment_Count += 1;
 
-                        notification_message = anItem.Author_name + " commented on your post.";
+                        notification_message = anItem.Author_name + " commented on your post from " + theNews.PublishTime.ToShortDateString() + ".";
                     }
 
                     anOperation = TableOperation.Replace(theNews);
