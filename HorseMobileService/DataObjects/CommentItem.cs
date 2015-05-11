@@ -6,6 +6,9 @@ using System.Web;
 
 namespace HorseMobileService.DataObjects
 {
+    /// <summary>
+    /// TableEntity for comment.
+    /// </summary>
     public class CommentItem : TableEntity
     {
         public string Author_id { get; set; }

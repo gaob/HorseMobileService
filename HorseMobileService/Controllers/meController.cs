@@ -19,6 +19,10 @@ namespace CustomAPIAMobileService.Controllers
         MobileServiceContext context = new MobileServiceContext();
 
         // GET api/me
+        /// <summary>
+        /// Get the User basic info after log in.
+        /// </summary>
+        /// <returns></returns>
         [AuthorizeLevel(AuthorizationLevel.User)]
         public async Task<HttpResponseMessage> Get()
         {
@@ -36,6 +40,7 @@ namespace CustomAPIAMobileService.Controllers
 
                     dynamic me = client.Get("me");
 
+                    // Get the profile picture url.
                     dynamic picture = client.Get("me/picture?redirect=false&height=200&width=200");
 
                     //Check to add User
@@ -43,6 +48,7 @@ namespace CustomAPIAMobileService.Controllers
                     var result = context.UserItems.Find(me_id);
                     bool isAdmin = false;
 
+                    // If it's a first time user, log the person in the UserItems table.
                     if (result == null)
                     {
                         context.UserItems.Add(new UserItem { Id = me_id, Name = me.name, Pic_url = picture.data.url, isAdmin = false});

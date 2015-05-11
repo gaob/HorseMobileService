@@ -202,7 +202,6 @@
     <Compile Include="Controllers\meController.cs" />
     <Compile Include="Controllers\queueController.cs" />
     <Compile Include="Controllers\tableController.cs" />
-    <Compile Include="Controllers\UserItemController.cs" />
     <Compile Include="DataObjects\CommentItem.cs" />
     <Compile Include="DataObjects\HorseItem.cs" />
     <Compile Include="DataObjects\NotificationItem.cs" />

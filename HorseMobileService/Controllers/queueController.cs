@@ -17,6 +17,11 @@ namespace HorseMobileService.Controllers
         public ApiServices Services { get; set; }
 
         // GET api/queue
+        /// <summary>
+        /// API to post message to Azure Queue
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
         [AuthorizeLevel(AuthorizationLevel.User)]
         public HttpResponseMessage Post([FromBody]dynamic payload)
         {

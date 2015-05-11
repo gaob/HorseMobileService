@@ -6,6 +6,9 @@ using System.Web;
 
 namespace HorseMobileService.DataObjects
 {
+    /// <summary>
+    /// EntityData for HorseItem.
+    /// </summary>
     public class HorseItem : EntityData
     {
         public string Name { get; set; }

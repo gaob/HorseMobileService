@@ -6,6 +6,9 @@ using System.Web;
 
 namespace HorseMobileService.DataObjects
 {
+    /// <summary>
+    /// TableEntity for NotificationItem.
+    /// </summary>
     public class NotificationItem : TableEntity
     {
         public string User_id { get; set; }

@@ -20,6 +20,10 @@ namespace HorseMobileService.Controllers
         public ApiServices Services { get; set; }
 
         // GET api/table/news
+        /// <summary>
+        /// GET API to get all news.
+        /// </summary>
+        /// <returns></returns>
         [AuthorizeLevel(AuthorizationLevel.User)]
         [Route("api/table/news")]
         public HttpResponseMessage GetAllNews()
@@ -67,6 +71,11 @@ namespace HorseMobileService.Controllers
         }
 
         // GET api/table/news
+        /// <summary>
+        /// POST api to create news.
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
         [AuthorizeLevel(AuthorizationLevel.User)]
         [Route("api/table/news")]
         public HttpResponseMessage PostNews([FromBody]dynamic payload)
@@ -141,6 +150,11 @@ namespace HorseMobileService.Controllers
         }
 
         // GET api/table/news
+        /// <summary>
+        /// DELETE api to delete news.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [AuthorizeLevel(AuthorizationLevel.User)]
         [Route("api/table/news/{id}")]
         public HttpResponseMessage DeleteNews(string id)
@@ -172,6 +186,7 @@ namespace HorseMobileService.Controllers
 
                 table.Execute(deleteOperation);
 
+                // Also delete all comments associated with this news.
                 table = tableClient.GetTableReference("commentstable");
 
                 var batchOperation = new TableBatchOperation();
@@ -185,11 +200,13 @@ namespace HorseMobileService.Controllers
                     batchOperation.Delete(e);
                 }
 
+                // If no comments, shouldn't run the batch operations, otherwise there will be exceptions.
                 if (batchOperation.Count > 0)
                 {
                     table.ExecuteBatch(batchOperation);
                 }
 
+                // Create a notification to inform the author that his/her post has been deleted.
                 table = tableClient.GetTableReference("notificationstable");
 
                 NotificationItem aNotification = new NotificationItem();
@@ -219,6 +236,11 @@ namespace HorseMobileService.Controllers
         }
 
         // GET api/table/comment
+        /// <summary>
+        /// GET api to get all comments for news.
+        /// </summary>
+        /// <param name="news_id"></param>
+        /// <returns></returns>
         [AuthorizeLevel(AuthorizationLevel.User)]
         [Route("api/table/comment/{news_id}")]
         public HttpResponseMessage GetComments(string news_id)
@@ -262,6 +284,11 @@ namespace HorseMobileService.Controllers
         }
 
         // POST api/table/comment
+        /// <summary>
+        /// POST api to create a comment.
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
         [AuthorizeLevel(AuthorizationLevel.User)]
         [Route("api/table/comment")]
         public HttpResponseMessage PostComment([FromBody]dynamic payload)
@@ -314,6 +341,7 @@ namespace HorseMobileService.Controllers
                 // Create the CloudTable object that represents the "logentry" table.
                 table = tableClient.GetTableReference("newstable");
 
+                // Get the news to update like or comment count.
                 anOperation = TableOperation.Retrieve<NewsItem>(NEWS_PARTITIONKEY, anItem.News_id);
 
                 tableResult = table.Execute(anOperation);
@@ -322,12 +350,14 @@ namespace HorseMobileService.Controllers
 
                 if (theNews != null)
                 {
+                    // Increment the like count for like action.
                     if (anItem.Liked)
                     {
                         theNews.Like_Count += 1;
 
                         notification_message = anItem.Author_name + " liked your post from " + theNews.PublishTime.ToShortDateString() + ".";
                     }
+                    // Increment the comment count for comment action.
                     else
                     {
                         theNews.Comment_Count += 1;
@@ -342,6 +372,7 @@ namespace HorseMobileService.Controllers
 
                 string to_id = theNews.Author_id;
 
+                // Create notification for the post author.
                 table = tableClient.GetTableReference("notificationstable");
 
                 NotificationItem aNotification = new NotificationItem();
@@ -360,6 +391,7 @@ namespace HorseMobileService.Controllers
 
                 NotificationHubClient hub = NotificationHubClient.CreateClientFromConnectionString("Endpoint=sb://dotnet3hub-ns.servicebus.windows.net/;SharedAccessKeyName=DefaultFullSharedAccessSignature;SharedAccessKey=vVp4C3reoryHpsR1TlN5l6qbnVX+cg7L7vsmIF4CpN0=", "dotnet3hub");
 
+                // comment from post author himself/herself doesn't send notifications.
                 if (anItem.Author_id != theNews.Author_id)
                 {
                     hub.SendGcmNativeNotificationAsync(@"{ ""data"" : {""msg"":""" + notification_message + @"""}}", new string[] { to_id });
@@ -381,6 +413,11 @@ namespace HorseMobileService.Controllers
         }
 
         // GET api/table/notifications
+        /// <summary>
+        /// GET api to get all news.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [AuthorizeLevel(AuthorizationLevel.User)]
         [Route("api/table/notifications/{id}")]
         public HttpResponseMessage GetAllNews(string id)

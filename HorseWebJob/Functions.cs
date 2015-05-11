@@ -28,10 +28,12 @@ namespace HorseWebJob
             {
                 using (Stream output = outputBlob.OpenWrite())
                 {
+                    // For horse profile image, resize to 400 width.
                     if (message.StartsWith("horse"))
                     {
                         ConvertImageToThumbnailJPG(input, output, 400);
                     }
+                    // For news image, resize to 800 width.
                     else if (message.StartsWith("news"))
                     {
                         ConvertImageToThumbnailJPG(input, output, 800);
@@ -57,6 +59,7 @@ namespace HorseWebJob
                     // Create the CloudTable object that represents the "logentry" table.
                     var table = tableClient.GetTableReference("newstable");
 
+                    // After done, update the news.IsReady field to true.
                     var anOperation = TableOperation.Retrieve<NewsItem>("NEWS", message.Substring(5));
 
                     var tableResult = table.Execute(anOperation);
@@ -81,6 +84,12 @@ namespace HorseWebJob
             }
         }
 
+        /// <summary>
+        /// Method to do the resizing of images.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="output"></param>
+        /// <param name="thumbnailsize"></param>
         public static void ConvertImageToThumbnailJPG(Stream input, Stream output, int thumbnailsize)
         {
             int width;

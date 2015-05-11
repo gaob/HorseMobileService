@@ -6,6 +6,9 @@ using System.Web;
 
 namespace HorseMobileService.DataObjects
 {
+    /// <summary>
+    /// Shared TableEntity NewsItems, since it's used in both MobileServices and WebJobs.
+    /// </summary>
     public class NewsItem : TableEntity
     {
         public string Author_id { get; set; }

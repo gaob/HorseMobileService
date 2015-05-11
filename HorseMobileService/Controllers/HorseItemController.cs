@@ -6,9 +6,14 @@ using System.Web.Http.OData;
 using Microsoft.WindowsAzure.Mobile.Service;
 using HorseMobileService.DataObjects;
 using HorseMobileService.Models;
+using Microsoft.WindowsAzure.Mobile.Service.Security;
 
 namespace HorseMobileService.Controllers
 {
+    /// <summary>
+    /// Apis to access HorseItem Table.
+    /// </summary>
+    [AuthorizeLevel(AuthorizationLevel.User)]
     public class HorseItemController : TableController<HorseItem>
     {
         MobileServiceContext context = new MobileServiceContext();
@@ -44,8 +49,9 @@ namespace HorseMobileService.Controllers
 
             var theHorse = context.HorseItems.Find(current.Id);
 
+            // based on the id post operation created, the pic_url is inferred.
             theHorse.Pic_url = "https://dotnet3.blob.core.windows.net/dotnet3/horse-" + current.Id + "-thumbnail.jpg";
-
+            
             await context.SaveChangesAsync();
 
             return CreatedAtRoute("Tables", new { id = current.Id }, current);
